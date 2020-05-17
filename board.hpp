@@ -17,12 +17,12 @@ class Board {
     char** getTable() const; // Table Getter
     vector<Word> * getWords(); // Words Getter
     void printTable(); // Print Current Table Status
-    bool placeWord(string word, int *pos, char orientation); // Adds word to word vector and changes table
-    void addWord(string word, int *pos, char orientation);
+    bool placeWord(string word, int *pos, char orientation); // Places word in table
+    void addWord(string word, int *pos, char orientation); // Adds word to the word vector
 
   private:
-    int width;
-    int height;
-    vector<Word> words;
-    char ** table;
+    int width; // Board's Width
+    int height; // Board's Height
+    vector<Word> words; // Board's Word Vector
+    char ** table; // Board's Table
 };

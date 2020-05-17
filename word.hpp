@@ -14,8 +14,8 @@ class Word {
     char getOrientation() const; // Orientation Getter
 
   private:
-    int size;
-    string value;
-    char position[2];
-    char orientation;
+    int size; // Number of characters of Word's string
+    string value; // Word's String
+    char position[2]; // Word's Position (Ex: Aa)
+    char orientation; // Word's Orientation ('H' or 'V')
 };

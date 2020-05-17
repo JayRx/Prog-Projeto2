@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <vector>
 #include <string>
 #include <string.h>
@@ -9,10 +10,24 @@
 
 using namespace std;
 
+string int_to_string(int n) {
+	ostringstream outstr;
+	outstr << n;
+	return outstr.str();
+}
+
+void setcolor(unsigned int color) {
+	cout << "\033[0;"+int_to_string(color)+"m";
+	cout.flush();
+}
+
 // Constructors
+
+// Default Constructor
 Board::Board() {
 }
 
+// Parameterized Constructor
 Board::Board(int width, int height) {
   char ** s_array;
 
@@ -31,6 +46,7 @@ Board::Board(int width, int height) {
   cout << "-> Created Board " << width << "x" << height << "!" << endl;
 }
 
+// Destructor
 Board::~Board() {
   /*for(int i = 0; i < this->height; i++) {
     free(this->table[i]);
@@ -39,40 +55,67 @@ Board::~Board() {
 }
 
 // Setters
+
+// Sets the Board's Width
 void Board::setWidth(int width) {
   this->width = width;
 }
 
+// Sets the Board's Height
 void Board::setHeight(int height) {
   this->height = height;
 }
 
 //Getters
+
+// Gets the Board's Width
 int Board::getWidth() const {
   return this->width;
 }
 
+// Gets the Board's Height
 int Board::getHeight() const {
   return this->height;
 }
 
+// Gets the Board's Table
 char** Board::getTable() const {
   return this->table;
 }
 
+// Gets the Board's Word Vector
 vector<Word> * Board::getWords() {
   return &words;
 }
 
+// Prints Board's Table
 void Board::printTable() {
+  char aux;
+  cout << endl << " ";
+
+  setcolor(36);
+  for(int i = 0; i < this->width; i++) {
+    aux = (char) (97 + i);
+    cout << aux;
+  }
+
   cout << endl;
+
   for(int i = 0; i < this->height; i++) {
+    setcolor(36);
+    aux = (char) (65 + i);
+    cout << aux;
+    setcolor(37);
     cout << this->table[i];
     cout << endl;
   }
+
   cout << endl;
 }
 
+// Other Functions
+
+// Adds Word to Board's Word Vector
 void Board::addWord(string value, int *position, char orientation) {
   char *pos;
 
@@ -86,6 +129,7 @@ void Board::addWord(string value, int *position, char orientation) {
   this->words.push_back(newWord);
 }
 
+// Checks if it is possible to place a Word in the Board's Table and calls Board::addWord
 bool Board::placeWord(string word, int *pos, char orientation) {
   char aux;
   Word newWord;
