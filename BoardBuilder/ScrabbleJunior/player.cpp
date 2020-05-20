@@ -115,11 +115,17 @@ bool Player::isHandEmpty()
 //Shows the player's hand
 void Player::showTiles()
 {
-
+    cout << " ";
+    for (int i = 0; i < (3 * playerHand.size() + playerHand.size() - 1); i++)
+        cout << "-";
+    cout << endl;
     cout << "| ";
     for (size_t i = 0; i < playerHand.size(); i++)
         cout << playerHand.at(i) << " | ";
     cout << endl;
-    
+    cout << " ";
+    for (int i = 0; i < (3 * playerHand.size() + playerHand.size() - 1); i++)
+        cout << "-";
+    cout << endl;
     
 }

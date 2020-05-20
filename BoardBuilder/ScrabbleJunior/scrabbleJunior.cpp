@@ -27,7 +27,7 @@ void gameScrabble(void)
     clrscr();
     showBoard(scrabbleBoard);
     
-    /*firstTurn(players.at(0), scrabbleBoard);
+    firstTurn(players.at(0), scrabbleBoard);
     for (size_t i = 1; i < players.size(); i++)
         otherTurns(players.at(i), scrabbleBoard);
     
@@ -35,9 +35,9 @@ void gameScrabble(void)
     {
         for (size_t i = 0; i < players.size(); i++)
             otherTurns(players.at(i), scrabbleBoard);
-    } while (!allHandsEmpty(players));*/
+    } while (!allHandsEmpty(players));
     
-   int count = 0;
+   /*int count = 0;
    map<string, char> possibleMoves = search(players.at(0), scrabbleBoard, 1);
    
    if (!possibleMoves.empty())
@@ -96,7 +96,7 @@ void gameScrabble(void)
             addPoolTile(players.at(i), scrabbleBoard);
             count--;
         }
-    }
+    }*/
     
     whoWins(players);
         

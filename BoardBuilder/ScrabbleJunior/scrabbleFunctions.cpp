@@ -5,6 +5,7 @@
 #include <string>
 #include <cstdlib>
 #include <iomanip>
+#include <algorithm>
 #include "scrabbleFunctions.h"
 #include "cell.h"
 #include "board.h"
@@ -61,10 +62,10 @@ void initBoard(Board &scrabbleBoard)
     //It is sumed 1 to the number of columns (width) to add a column on the left side of board which will contain labels for the lines
     scrabbleBoard.setDimensions(height+1, width+1);
     
-    while(!boardStr.eof() && boardStr.peek() != 0)
+    while(!boardStr.eof() && boardStr >> coordinates >> orientation >> word)
     {
         //Extraction of: coordinates of the word on the board; word's orientation; and word itself
-        boardStr >> coordinates >> orientation >> word;
+        //boardStr >> coordinates >> orientation >> word;
     
         x = coordinates.at(0);
         
@@ -199,8 +200,6 @@ void addPoolTile(Player &player, Board &board)
 {
     if (!board.isPoolEmpty())
         player.addTile(board.getPoolTile());
-    //else
-        //cout << "The pool is empty \n";
 }
 
 //------------------------------------------
@@ -220,7 +219,6 @@ bool allHandsEmpty(vector<Player> player)
 char getHandTile(Player &player)
 {
     char handTile;
-    cout << endl;
     player.showTiles();
     cout << "Choose a tile: ";
     cin >> handTile;
@@ -394,28 +392,27 @@ map<string,char> search(Player &player, Board &board, int no_move, vector<string
 {
     map<string, char> listWords;
     string coordinates;
-   // char* letters;
-   
     for (auto x : player.getHand())
         for (size_t i = 1; i < board.getBoardDimensions().at(0); i++)
             for (size_t j = 1; j < board.getBoardDimensions().at(1); j++)
                 switch (no_move)
-                { case 1:
+                {   //Case 1 corresponds to first move of the first turn
+                    case 1:
                         if (matchingTiles(x, board, i, j) && firstLetter(i, j, board))
                             {
-                                //coordinates = letters[i] + tolower(letters[j]);
                                 coordinates = to_string(i) + ' ' + to_string(j);
                                 listWords.insert(pair<string, char >(coordinates, board.getTile(i,j)));
                             }
                 break;
+                //Case 2 corresponds to the second move of first turn or the first move of other turns
                 case 2:
                         if (matchingTiles(x, board, i, j) && !forbiddenTile(x, board, i, j) && (firstLetter(i, j, board) || isPreviousTileFilled(i, j, board)))
                             {
                                 coordinates = to_string(i) + ' ' + to_string(j);
-                                
                                 listWords.insert(pair<string, char >(coordinates, board.getTile(i,j)));
                             }
                         break;
+                //Case 3 corresponds to the second move of other turns
                 case 3:
                     if (matchingTiles(x, board, i, j) && !forbiddenTile(x, board, i, j) && !filledByPlayer(x2, y2, i, j, words, board) && (firstLetter(i, j, board) || isPreviousTileFilled(i, j, board)))
                         {
@@ -433,28 +430,41 @@ void exchangeTiles(Player &player, Board &board)
 {
    if (!board.isPoolEmpty())
    {
-       string chosenTiles;
-       cout << "You have no valid moves. \n";
+       char chosenTile;
+       cout << endl;
+       cout << player.getName() << ", you have no valid moves. \n";
        cout << "Chose two of your tiles to exchange for two of the pool. \n";
-       player.showTiles();
        cout << "Chose the first tile: \n";
-       //getline(cin, chosenTiles);
+       
+       do {chosenTile = getHandTile(player); } while (!player.removeTile(chosenTile));
+       board.addPoolTile(chosenTile);
+       addPoolTile(player, board);
+       
+       if (!board.isPoolEmpty() && board.getPoolSize() > 1)
+       {
+           cout << "Chose the second tile: \n";
+           do {chosenTile = getHandTile(player); } while (!player.removeTile(chosenTile));
+           board.addPoolTile(chosenTile);
+           addPoolTile(player, board);
+       }
+       else
+           cout << "The pool has only 1 tile. There are no more possibles exchanges. \n";
    }
    else
-    cout << player.getName() <<  "there are no more valid moves \n";
+    cout << player.getName() <<  ", you have no more valid moves \n";
 }
 
 //---------------------------------------------------------------------------------
 //First move of the first turn 
-void firstMoveA(Player &player, Board &board, map<string, char> listTiles)
+void firstMoveFT(Player &player, Board &board, map<string, char> listTiles)
 {
     cout << endl;
-    cout << player.getName() << " it's your turn to play \n";
+    cout << player.getName() << ", it's your turn to play \n";
     char handTile; string coordinates;
     size_t a, b;
     
     if (!listTiles.empty())
-    {   cout << "Possible moves \n";
+    { cout << endl;  cout << "Possible moves \n";
         for (auto x : listTiles)
             cout << x.first << ' ' << x.second << endl;
     }
@@ -500,15 +510,15 @@ void firstMoveA(Player &player, Board &board, map<string, char> listTiles)
 
 //---------------------------------------------------------------------------------
 //Second move of the first turn
-void firstMoveB(Player &player, Board &board, map<string, char> listTiles)
+void secondMoveFT(Player &player, Board &board, map<string, char> listTiles)
 {
     cout << endl;
-    cout << player.getName() << " it's your turn to play \n";
+    cout << player.getName() << ", it's your turn to play \n";
     char handTile; string coordinates;
     size_t a, b;
     
     if (!listTiles.empty())
-    {cout << "Possible moves \n";
+    {cout << endl; cout << "Possible moves \n";
         for (auto x : listTiles)
             cout << x.first << ' ' << x.second << endl;
     }
@@ -567,36 +577,38 @@ void firstTurn(Player &player, Board &board)
     map<string, char> possibleMoves = search(player, board, 1);
     
     if (!possibleMoves.empty())
-    {   firstMoveA(player, board, possibleMoves);
+    {   firstMoveFT(player, board, possibleMoves);
         count++;
         possibleMoves = search(player, board, 2);
         if (!possibleMoves.empty())
-        { firstMoveB(player, board, possibleMoves); count++;}
-        
-        //else
-          //  exchangeTiles(player, board);
+        { secondMoveFT(player, board, possibleMoves); count++;}
         
         while(count)
         {   addPoolTile(player, board);
             count--;
         }
     }
+
+    else
+      exchangeTiles(player, board);
 }
 
 
 //---------------------------------------------------------------------------------
 //First move of other turns
-//Returns a variable of type Word which will be import for the second move
-Word move(Player &player, Board &board, map<string, char> listTiles)
+//Returns a variable of type Word which will be important for the second move
+Word firstMoveOT(Player &player, Board &board, map<string, char> listTiles)
 {
     cout << endl;
-    cout << player.getName() << " it's your turn to play \n";
+    cout << player.getName() << ", it's your turn to play \n";
     char handTile; string coordinates;
     size_t a, b;
     
     if (!listTiles.empty())
+    {  cout << endl; cout << "Possible moves \n";
         for (auto x : listTiles)
             cout << x.first << ' ' << x.second << endl;
+    }
     
     do {
         //Checks if the chosen tile belongs to player's hand and if chosen coordinates are valid
@@ -654,18 +666,19 @@ Word move(Player &player, Board &board, map<string, char> listTiles)
 
 //---------------------------------------------------------------------------------
 //Second move of other turns
-void anotherMove(Player &player, Board &board, Word wordPlayed, map<string, char> listTiles)
+void secondMoveOT(Player &player, Board &board, Word wordPlayed, map<string, char> listTiles)
 {
     cout << endl;
-    cout << player.getName() << " it's your turn to play \n";
+    cout << player.getName() << ", it's your turn to play \n";
     char handTile; string coordinates;
     size_t a, b;
     bool filled;
     
-   //map<string, char> listWords = search(player, board, 3, wordPlayed.words, wordPlayed.x, wordPlayed.y);
     if (!listTiles.empty())
+    { cout << endl; cout << "Possible moves \n";
         for (auto x : listTiles)
             cout << x.first << ' ' << x.second << endl;
+    }
     
     do {
         //Checks if the chosen tile belongs to player's hand and if chosen coordinates are valid
@@ -730,14 +743,15 @@ void otherTurns(Player &player, Board &board)
     int count = 0;
     map<string, char> possibleMoves = search(player, board, 2);
     if (!possibleMoves.empty())
-        {   Word palavra = move(player, board, possibleMoves);
-            possibleMoves = search(player, board, 3, palavra.words, palavra.x, palavra.y);
+        {   Word wordPlayed = firstMoveOT(player, board, possibleMoves);
+            possibleMoves = search(player, board, 3, wordPlayed.words, wordPlayed.x, wordPlayed.y);
             count++;
             if (!possibleMoves.empty())
-            {   anotherMove(player, board, palavra, possibleMoves); count++;}
-            else
-                exchangeTiles(player, board);
+            {   secondMoveOT(player, board, wordPlayed, possibleMoves); count++;}
         }
+    else
+        exchangeTiles(player, board);
+   
     while(count)
     {
         addPoolTile(player, board);
@@ -789,7 +803,6 @@ void calculateScore(size_t x, size_t y, Board &board, Player &player)
             }
             player.setScore(player.getScore() + additional);
         }
-    
 
     cout << player.getName() << " your score is " << player.getScore() << endl;
             
@@ -799,18 +812,19 @@ void calculateScore(size_t x, size_t y, Board &board, Player &player)
 //Determines the winner of the game
 void whoWins(vector<Player> players)
 {
-    map<int, string> totalScores;
-    
+    multimap <int, int> totalScores;
     for (auto x : players)
-        totalScores.insert(pair<int, string> (x.getScore(), x.getName()));
+        totalScores.insert(pair<int, int> (x.getScore(), x.getId()));
     
-    size_t pos = -1;
+    size_t pos;
+    cout << endl;
     cout << " Score   Name \n";
     for (auto x : totalScores)
-    {   cout << setw(4) << x.first << setw(6) << x.second << endl;
-        pos++;
+    {
+        cout << setw(4) << x.first << setw(10) << players.at(x.second - 1).getName() << endl;
+        pos = x.second - 1 ;
     }
-    
-    cout << "Congratulations " << players.at(pos).getName() << " you won the game \n";
+    cout << "Congratulations " << players.at(pos).getName() << ", you won the game \n";
+   
 }
 

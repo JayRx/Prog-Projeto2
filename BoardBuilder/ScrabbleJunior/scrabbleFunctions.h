@@ -68,20 +68,20 @@ bool filledByPlayer(size_t x1, size_t y1, size_t x2, size_t y2, vector<string> w
 //Function for the first turn 
 void firstTurn(Player &player, Board &board);
 
-//Function for the first move in order to place the first tile
-void firstMoveA(Player &player, Board &board, map<string, char> listTiles);
+//Function for the first turn in order to place the first tile
+void firstMoveFT(Player &player, Board &board, map<string, char> listTiles);
 
-//Function for the first move in order to place the second tile
-void firstMoveB(Player &player, Board &board, map<string, char> listTiles);
+//Function for the first turn in order to place the second tile
+void secondMoveFT(Player &player, Board &board, map<string, char> listTiles);
 
 //Function for other turns
 void otherTurns(Player &player, Board &board);
 
 //Function for the first move of other turns
-Word move(Player &player, Board &board, map<string, char> listTiles);
+Word firstMoveOT(Player &player, Board &board, map<string, char> listTiles);
 
 //Function for the second move of other turns
-void anotherMove(Player &player, Board &board, Word palavra, map<string, char> listTiles);
+void secondMoveOT(Player &player, Board &board, Word palavra, map<string, char> listTiles);
 
 //Searches for all possibles moves, based on current state of the board and on player's hand
 map<string, char> search(Player &player, Board &board, int no_move, vector<string> words = {"XXXX", "XXXX"},  size_t x2 = 0, size_t y2 = 0);
@@ -89,7 +89,7 @@ map<string, char> search(Player &player, Board &board, int no_move, vector<strin
 //Exchange two tiles of player's hand for two tiles from pool
 void exchangeTiles(Player &player, Board &board);
 
-//Determines current score of player
+//Updates player's score
 void calculateScore(size_t x, size_t y, Board &board, Player &player);
 
 //Determines the winner of the game

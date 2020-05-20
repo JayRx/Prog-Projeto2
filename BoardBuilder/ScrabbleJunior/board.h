@@ -22,6 +22,7 @@ public:
     char getPoolTile();
     size_t getPoolSize();
     vector<size_t> getTilePositionInWord(size_t &x, size_t &y);
+    void addPoolTile(char tile);
     bool isPoolEmpty(void);
 private:
     size_t lines, cols;

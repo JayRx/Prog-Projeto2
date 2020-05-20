@@ -204,3 +204,7 @@ bool Board::isPoolEmpty()
     return pool.empty();
 }
 
+void Board::addPoolTile(char tile)
+{
+    pool.push_back(tile);
+}
