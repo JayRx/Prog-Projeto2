@@ -17,6 +17,7 @@ Exemplo de compilação: c++ BoardBuilder.cpp -o BoardBuilder board.cpp word.cpp
 Exemplo de execução: ./BoardBuilder
 
 A alteração das cores do terminal foi implementada através de "ANSI escape sequences" e destina-se apenas à execução em Linux/Unix.
+É necessário ter um ficheiro "words.txt" para o programa funcionar corretamente.
 
 ========================
 Notas - Scrabble Junior
