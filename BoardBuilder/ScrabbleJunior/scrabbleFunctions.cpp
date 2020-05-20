@@ -71,7 +71,7 @@ void initBoard(Board &scrabbleBoard)
         
         //Checks for a board representation
         //If a board representation exists, the previous extraction is not suitable for it nor this function as it builds its own board
-        if (x > 96)
+        if (x < 65 || x > 90)
             break;
 
         y = coordinates.at(1);
@@ -468,6 +468,7 @@ void firstMoveFT(Player &player, Board &board, map<string, char> listTiles)
         for (auto x : listTiles)
             cout << x.first << ' ' << x.second << endl;
     }
+    cout << endl;
     
     do
     {
@@ -522,8 +523,9 @@ void secondMoveFT(Player &player, Board &board, map<string, char> listTiles)
         for (auto x : listTiles)
             cout << x.first << ' ' << x.second << endl;
     }
+    cout << endl;
     
-    //Similar to firstMoveA
+    //Similar to firstMoveFT
     do {
         //Checks if the chosen tile belongs to player's hand and if chosen coordinates are valid
         do { handTile = getHandTile(player);} while (!player.removeTile(handTile));
@@ -609,6 +611,7 @@ Word firstMoveOT(Player &player, Board &board, map<string, char> listTiles)
         for (auto x : listTiles)
             cout << x.first << ' ' << x.second << endl;
     }
+    cout << endl;
     
     do {
         //Checks if the chosen tile belongs to player's hand and if chosen coordinates are valid
@@ -679,6 +682,7 @@ void secondMoveOT(Player &player, Board &board, Word wordPlayed, map<string, cha
         for (auto x : listTiles)
             cout << x.first << ' ' << x.second << endl;
     }
+    cout << endl;
     
     do {
         //Checks if the chosen tile belongs to player's hand and if chosen coordinates are valid
